@@ -1,0 +1,17 @@
+{
+    "folders": [
+        {
+            "path": "./backend"
+        },
+        {
+            "path": "./frontend"
+        }
+    ],
+    "settings": {
+        "files.autoSave": "onWindowChange",
+        "prettier.tabWidth": 4,
+        "prettier.singleQuote": true,
+        "prettier.jsxSingleQuote": true,
+        "editor.fontSize": 14
+    }
+}
