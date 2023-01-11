@@ -57,6 +57,6 @@ export class User {
     })
     accessTokens: AccessToken[];
 
-    @OneToMany(() => Member, (member) => member.user)
-    members: Member[];
+    @OneToMany(() => Member, (member) => member.user, { cascade: true })
+    memberships: Member[];
 }

@@ -21,18 +21,21 @@ export class Member {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ enum: MemberStatus, type: 'enum' })
+    @Column({ enum: MemberStatus, type: 'enum', default: MemberStatus.OFFLINE })
     status: MemberStatus;
 
-    @ManyToOne(() => User, (user) => user.members)
+    @ManyToOne(() => User, (user) => user.memberships)
     @JoinColumn({ name: 'user_id' })
+    @Column({ type: 'int', nullable: false, name: 'user_id' })
     user: User;
 
     @ManyToOne(() => Role, (role) => role.members)
     @JoinColumn({ name: 'role_id' })
     role: Role;
 
-    @ManyToOne(() => Room, (room) => room.members)
+    @ManyToOne(() => Room, (room) => room.members, {
+        onDelete: 'CASCADE',
+    })
     @JoinColumn({ name: 'room_id' })
     room: Room;
 

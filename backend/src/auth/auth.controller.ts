@@ -4,14 +4,15 @@ import {
     Get,
     Post,
     Body,
-    Patch,
-    Param,
-    Delete,
     HttpCode,
+    UseGuards,
+    Req,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { SendVerifyCodeDto, SignUpDto } from './dto/signup.dto';
+import { AuthGuard } from 'src/common/guard/auth.guard';
+import { Request } from 'express';
 @ApiBearerAuth()
 @ApiTags('auth')
 @Controller('auth')
@@ -40,5 +41,14 @@ export class AuthController {
     async login(@Body() loginDto: LoginDto) {
         const token = await this.authService.login(loginDto);
         return { token };
+    }
+
+    @UseGuards(AuthGuard)
+    @Get('me')
+    findMe(@Req() req: Request) {
+        return {
+            message: 'user found',
+            user: req.user,
+        };
     }
 }

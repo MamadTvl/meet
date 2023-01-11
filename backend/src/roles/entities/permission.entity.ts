@@ -7,6 +7,12 @@ import {
 } from 'typeorm';
 import { Role } from './role.entity';
 
+export enum Permissions {
+    ALL = 'ALL',
+    ALL_ROOM = 'ROOM_*',
+    DELETE_ROOM = 'DELETE_ROOM',
+    MODIFY_ROOM = 'MODIFY_ROOM',
+}
 @Entity({ name: 'permissions' })
 export class Permission {
     @PrimaryGeneratedColumn()

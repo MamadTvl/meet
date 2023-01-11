@@ -7,7 +7,9 @@ import {
     JoinTable,
     ManyToMany,
     OneToMany,
+    PrimaryColumn,
     PrimaryGeneratedColumn,
+    Unique,
     UpdateDateColumn,
 } from 'typeorm';
 import { Permission } from './permission.entity';
@@ -17,6 +19,10 @@ export enum RoleType {
     ROOM = 'ROOM',
 }
 
+export enum Roles {
+    ADMIN = 'ADMIN',
+}
+@Unique(['name', 'type'])
 @Entity({ name: 'roles' })
 export class Role {
     @PrimaryGeneratedColumn()

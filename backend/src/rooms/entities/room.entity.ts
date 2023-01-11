@@ -17,13 +17,13 @@ export class Room {
     @Column({ nullable: true })
     name: string;
 
-    @Column({ name: 'is_active', type: 'boolean' })
+    @Column({ name: 'is_active', type: 'boolean', default: true })
     isActive: boolean;
 
-    @OneToMany(() => Message, (message) => message.room)
+    @OneToMany(() => Message, (message) => message.room, { cascade: true })
     messages: Message[];
 
-    @OneToMany(() => Member, (member) => member.room)
+    @OneToMany(() => Member, (member) => member.room, { cascade: true })
     members: Member[];
 
     @CreateDateColumn({ name: 'created_at' })
