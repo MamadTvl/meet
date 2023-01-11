@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { CacheModule, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
@@ -12,6 +12,7 @@ import { AuthModule } from './auth/auth.module';
 @Module({
     imports: [
         ConfigModule.forRoot(),
+        CacheModule.register({ isGlobal: true }),
         TypeOrmModule.forRoot({
             type: 'mysql',
             host: process.env.MYSQL_HOST,

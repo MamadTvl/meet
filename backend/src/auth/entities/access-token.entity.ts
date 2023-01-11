@@ -18,7 +18,7 @@ export class AccessToken {
     @Column()
     token: string;
 
-    @ManyToOne(() => User, (user) => user.accessToken)
+    @ManyToOne(() => User, (user) => user.accessTokens)
     @JoinColumn({ name: 'user_id' })
     user: User;
 
@@ -28,6 +28,9 @@ export class AccessToken {
     @UpdateDateColumn({ name: 'updated_at' })
     updatedAt: Date;
 
-    @Column({ name: 'expires_at' })
+    @Column({ name: 'expires_at', default: null })
     expiresAt: Date;
+
+    @Column({ name: 'deleted_at', default: null })
+    deletedAt: Date;
 }

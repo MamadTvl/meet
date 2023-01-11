@@ -23,11 +23,14 @@ export class User {
     @Column({ name: 'last_name', nullable: true })
     lastName: string | null;
 
-    @Column({ nullable: true })
+    @Column({ nullable: true, unique: true })
     email: string | null;
 
-    @Column({ nullable: true })
+    @Column({ nullable: true, unique: true })
     phone: string | null;
+
+    @Column({ nullable: false, select: false })
+    password: string;
 
     @CreateDateColumn({ name: 'created_at' })
     createdAt: Date;
@@ -49,8 +52,10 @@ export class User {
     })
     roles: Role[];
 
-    @OneToMany(() => AccessToken, (accessToken) => accessToken.user)
-    accessToken: AccessToken[];
+    @OneToMany(() => AccessToken, (accessToken) => accessToken.user, {
+        cascade: true,
+    })
+    accessTokens: AccessToken[];
 
     @OneToMany(() => Member, (member) => member.user)
     members: Member[];
