@@ -7,6 +7,7 @@ import { AccessToken } from './entities/access-token.entity';
 
 @Module({
     imports: [TypeOrmModule.forFeature([AccessToken, User])],
+    exports: [TypeOrmModule],
     controllers: [AuthController],
     providers: [AuthService],
 })

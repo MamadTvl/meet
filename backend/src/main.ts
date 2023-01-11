@@ -8,8 +8,8 @@ async function bootstrap() {
     app.use(logger('dev'));
     app.useGlobalPipes(new ValidationPipe());
     const config = new DocumentBuilder()
+        .addBearerAuth({ in: 'Authorization', type: 'http' })
         .setTitle('Meet Server')
-        .addBearerAuth({ type: 'apiKey', in: 'Authorization' })
         .setDescription('The Meet Server API description')
         .setVersion('1.0')
         .addTag('auth')

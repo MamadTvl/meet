@@ -1,4 +1,9 @@
-import { CacheModule, Module } from '@nestjs/common';
+import {
+    CacheModule,
+    MiddlewareConsumer,
+    Module,
+    NestModule,
+} from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
@@ -8,6 +13,7 @@ import { RoomsModule } from './rooms/rooms.module';
 import { MessagesModule } from './messages/messages.module';
 import { RolesModule } from './roles/roles.module';
 import { AuthModule } from './auth/auth.module';
+import { AuthorizationMiddleware } from './common/middleware/authorization.middleware';
 
 @Module({
     imports: [
@@ -34,4 +40,8 @@ import { AuthModule } from './auth/auth.module';
     controllers: [AppController],
     providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+    configure(consumer: MiddlewareConsumer) {
+        consumer.apply(AuthorizationMiddleware).forRoutes('*');
+    }
+}

@@ -24,9 +24,11 @@ export class SignUpDto {
     @IsString()
     code: string;
 
+    @ApiProperty()
     @IsPhoneNumber('IR')
     phone: string;
 
+    @ApiProperty()
     @IsString()
     @MinLength(6)
     password: string;
