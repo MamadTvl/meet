@@ -1,6 +1,6 @@
 import { createHash } from 'crypto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Injectable, NestMiddleware, Scope } from '@nestjs/common';
+import { Injectable, NestMiddleware } from '@nestjs/common';
 import { NextFunction, Request, Response } from 'express';
 import { Repository } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';

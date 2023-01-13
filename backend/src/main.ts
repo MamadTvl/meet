@@ -3,10 +3,13 @@ import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import logger from 'morgan';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { ExpressPeerServer } from 'peer';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import { join } from 'path';
 
 async function bootstrap() {
-    const app = await NestFactory.create(AppModule);
+    const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+        cors: true,
+    });
     app.use(logger('dev'));
     app.useGlobalPipes(new ValidationPipe());
     const config = new DocumentBuilder()
@@ -26,11 +29,8 @@ async function bootstrap() {
             persistAuthorization: true,
         },
     });
-    const peerServer = ExpressPeerServer(app.getHttpServer(), {
-        // path: '/peerjs',
-        // debug: true,
-    });
-    app.use('/peerjs', peerServer);
+    app.useStaticAssets(join(__dirname, '..', 'public'));
+    app.setViewEngine('ejs');
     await app.listen(process.env.PORT);
 }
 bootstrap();

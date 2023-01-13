@@ -1,3 +1,4 @@
+import { PeerServerModule } from './modules/peer-server/peer-server.module';
 import {
     CacheModule,
     MiddlewareConsumer,
@@ -14,11 +15,17 @@ import { MessagesModule } from './messages/messages.module';
 import { RolesModule } from './roles/roles.module';
 import { AuthModule } from './auth/auth.module';
 import { AuthorizationMiddleware } from './common/middleware/authorization.middleware';
+import { MeetModule } from './meet/meet.module';
 
 @Module({
     imports: [
         ConfigModule.forRoot(),
         CacheModule.register({ isGlobal: true }),
+        PeerServerModule.register({
+            path: '/',
+            allow_discovery: true,
+            // proxied: 'true',
+        }),
         TypeOrmModule.forRoot({
             type: 'mysql',
             host: process.env.MYSQL_HOST,
@@ -36,6 +43,7 @@ import { AuthorizationMiddleware } from './common/middleware/authorization.middl
         MessagesModule,
         RolesModule,
         AuthModule,
+        MeetModule,
     ],
     controllers: [AppController],
     providers: [AppService],
