@@ -38,6 +38,7 @@
     "kavenegar": "^1.1.4",
     "morgan": "^1.10.0",
     "mysql2": "^2.3.3",
+    "peer": "^0.6.1",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",

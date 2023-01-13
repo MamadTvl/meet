@@ -3,6 +3,8 @@ import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import logger from 'morgan';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { ExpressPeerServer } from 'peer';
+
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
     app.use(logger('dev'));
@@ -24,6 +26,11 @@ async function bootstrap() {
             persistAuthorization: true,
         },
     });
+    const peerServer = ExpressPeerServer(app.getHttpServer(), {
+        // path: '/peerjs',
+        // debug: true,
+    });
+    app.use('/peerjs', peerServer);
     await app.listen(process.env.PORT);
 }
 bootstrap();
