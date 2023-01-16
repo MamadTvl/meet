@@ -21,11 +21,11 @@ import { MeetModule } from './meet/meet.module';
     imports: [
         ConfigModule.forRoot(),
         CacheModule.register({ isGlobal: true }),
-        PeerServerModule.register({
-            path: '/',
-            allow_discovery: true,
-            // proxied: 'true',
-        }),
+        // PeerServerModule.register({
+        //     path: '/',
+        //     allow_discovery: true,
+        //     // proxied: 'true',
+        // }),
         TypeOrmModule.forRoot({
             type: 'mysql',
             host: process.env.MYSQL_HOST,
