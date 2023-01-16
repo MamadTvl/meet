@@ -33,7 +33,7 @@ export class MeetGateway
         const token = client.handshake.headers.authorization || '';
         const roomId = client.handshake.query.roomId as string;
         if (!roomId) {
-            throw new WsException('missing roomId query');
+            client.disconnect();
         }
         client.data = await this.meetService.userData(token, roomId);
         if (this.server.of('/').adapter.rooms.has(roomId)) {
