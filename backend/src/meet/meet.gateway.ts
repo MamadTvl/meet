@@ -54,7 +54,6 @@ export class MeetGateway
         const sockets: MeetRemoteSocket[] = await this.server
             .in(roomId)
             .fetchSockets();
-        console.log(sockets);
 
         const adminSocket = sockets.find(
             (socket) => socket.data?.memberships[0]?.role.name === Roles.ADMIN,
@@ -102,9 +101,22 @@ export class MeetGateway
     @SubscribeMessage('make-answer')
     public makeAnswer(client: MeetSocket, data: any): void {
         client.to(data.to).emit('answer-made', {
-            socket: client.id,
             answer: data.answer,
+            socket: client.id,
         });
+    }
+
+    @SubscribeMessage('send-message')
+    public sendMessage(client: MeetSocket, data: { message: string }) {
+        if (client.data) {
+            client.broadcast
+                .to(client.handshake.query.roomId)
+                .emit('new-message', {
+                    from: client.data,
+                    message: data.message,
+                    date: new Date(),
+                });
+        }
     }
 
     public afterInit(server: MeetServer): void {
