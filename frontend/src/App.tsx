@@ -1,38 +1,39 @@
-import { useState } from 'react';
-import reactLogo from './assets/react.svg';
-import './App.css';
+import React from 'react';
+import '@fontsource/roboto/300.css';
+import '@fontsource/roboto/400.css';
+import '@fontsource/roboto/500.css';
+import '@fontsource/roboto/700.css';
+import { Routes, Route } from 'react-router-dom';
+import ThemeProvider from './component/theme/context/ThemeProvider';
+import { CssBaseline } from '@mui/material';
+import Home from './component/pages/Home';
+import Profile from './component/pages/Profile';
+import Room from './component/pages/Room';
+import Login from './component/pages/Login';
+import Layout from './component/layout';
+import { Router } from './component/link/Link';
+import SignUp from './component/pages/SignUp';
+import { SnackbarProvider } from 'notistack';
 
-function App() {
-    const [count, setCount] = useState(0);
-
+const App: React.FC = () => {
     return (
-        <div className='App'>
-            <div>
-                <a href='https://vitejs.dev' target='_blank'>
-                    <img src='/vite.svg' className='logo' alt='Vite logo' />
-                </a>
-                <a href='https://reactjs.org' target='_blank'>
-                    <img
-                        src={reactLogo}
-                        className='logo react'
-                        alt='React logo'
-                    />
-                </a>
-            </div>
-            <h1>Vite + React</h1>
-            <div className='card'>
-                <button onClick={() => setCount((count) => count + 1)}>
-                    count is {count}
-                </button>
-                <p>
-                    Edit <code>src/App.tsx</code> and save to test HMR
-                </p>
-            </div>
-            <p className='read-the-docs'>
-                Click on the Vite and React logos to learn more
-            </p>
-        </div>
+        <Router>
+            <ThemeProvider>
+                <CssBaseline />
+                <SnackbarProvider>
+                    <Layout>
+                        <Routes>
+                            <Route path='/' element={<Home />} />
+                            <Route path='/login' element={<Login />} />
+                            <Route path='/sign-up' element={<SignUp />} />
+                            <Route path='/profile' element={<Profile />} />
+                            <Route path='/room/:id' element={<Room />} />
+                        </Routes>
+                    </Layout>
+                </SnackbarProvider>
+            </ThemeProvider>
+        </Router>
     );
-}
+};
 
 export default App;
