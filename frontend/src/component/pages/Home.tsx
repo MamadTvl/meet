@@ -11,26 +11,30 @@ import {
 } from '@mui/material';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuthStore } from '../../store/user';
 
 const Home: React.FC = () => {
     const [roomId, setRoomId] = useState('');
     const navigate = useNavigate();
+    const isLogin = useAuthStore((store) => store.isLogin);
     return (
         <Container maxWidth={'lg'} sx={{ mt: 2 }}>
-            <Grid container spacing={2} justifyContent={'center'}>
+            <Grid container spacing={5} justifyContent={'center'}>
                 <Grid item xs={12}>
                     <Typography align={'center'} variant='h4' gutterBottom>
                         An Open Source Meeting Application
                     </Typography>
                 </Grid>
                 <Grid
+                    item
                     xs={12}
                     display={'flex'}
                     justifyContent={'center'}
-                    alignItems={'center'}
-                    sx={{ mt: 2 }}>
+                    alignItems={'center'}>
                     <Button
-                        onClick={() => navigate('/login')}
+                        onClick={() =>
+                            navigate(isLogin ? '/profile' : '/login')
+                        }
                         sx={{
                             height: 54,
                             width: 218,
@@ -44,9 +48,10 @@ const Home: React.FC = () => {
                     <Box
                         component={'form'}
                         display={'flex'}
+                        onSubmit={() => navigate('/room/' + roomId)}
                         alignItems={'center'}>
                         <TextField
-                            sx={{width: 340}}
+                            sx={{ width: 340 }}
                             placeholder='enter the meeting code'
                             value={roomId}
                             onChange={(e) => setRoomId(e.target.value)}
@@ -55,7 +60,7 @@ const Home: React.FC = () => {
                         <Button
                             disabled={roomId === ''}
                             variant={'text'}
-                            onClick={() => navigate('/room/' + roomId)}>
+                            type={'submit'}>
                             Go
                         </Button>
                     </Box>

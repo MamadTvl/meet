@@ -6,12 +6,8 @@ import {
     Typography,
     useScrollTrigger,
     Link,
-    IconButton,
 } from '@mui/material';
 import Logo from '../../../assets/linom.svg';
-import Brightness4Icon from '@mui/icons-material/Brightness4';
-import Brightness7Icon from '@mui/icons-material/Brightness7';
-import ToggleTheme from './ToggleTheme';
 import HeaderButtons from './HeaderButtons';
 
 const Header = () => {

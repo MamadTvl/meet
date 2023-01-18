@@ -1,10 +1,16 @@
-import React from 'react';
+import { CircularProgress } from '@mui/material';
+import React, { PropsWithChildren, useMemo } from 'react';
 import {
     BrowserRouter,
     Link as RouterLink,
     LinkProps as RouterLinkProps,
+    Navigate,
+    Route,
+    RouteProps,
+    useNavigate,
 } from 'react-router-dom';
 import { StaticRouter } from 'react-router-dom/server';
+import { useAuthStore } from '../../store/user';
 
 export const LinkBehavior = React.forwardRef<
     HTMLAnchorElement,
@@ -12,10 +18,23 @@ export const LinkBehavior = React.forwardRef<
 >((props, ref) => {
     const { href, ...other } = props;
     // Map href (MUI) -> to (react-router)
-    return (
-        <RouterLink ref={ref} to={href} {...other} />
-    );
+    return <RouterLink ref={ref} to={href} {...other} />;
 });
+
+export const ProtectedRoute: React.FC<PropsWithChildren> = ({ children }) => {
+    const [loading, isLogin] = useAuthStore((store) => [
+        store.loading,
+        store.isLogin,
+    ]);
+    const navigate = useNavigate();
+    if (!loading && !isLogin) {
+        navigate('/login');
+    }
+    if (!loading && isLogin) {
+        return <>{children}</>;
+    }
+    return <CircularProgress size={24} color={'secondary'} />;
+};
 
 export function Router(props: { children?: React.ReactNode }) {
     const { children } = props;

@@ -11,7 +11,7 @@ import Profile from './component/pages/Profile';
 import Room from './component/pages/Room';
 import Login from './component/pages/Login';
 import Layout from './component/layout';
-import { Router } from './component/link/Link';
+import { ProtectedRoute, Router } from './component/link/Link';
 import SignUp from './component/pages/SignUp';
 import { SnackbarProvider } from 'notistack';
 
@@ -26,8 +26,15 @@ const App: React.FC = () => {
                             <Route path='/' element={<Home />} />
                             <Route path='/login' element={<Login />} />
                             <Route path='/sign-up' element={<SignUp />} />
-                            <Route path='/profile' element={<Profile />} />
-                            <Route path='/room/:id' element={<Room />} />
+                            <Route
+                                path='/profile'
+                                element={
+                                    <ProtectedRoute>
+                                        <Profile />
+                                    </ProtectedRoute>
+                                }
+                            />
+                            <Route path='/room/:roomId' element={<Room />} />
                         </Routes>
                     </Layout>
                 </SnackbarProvider>
