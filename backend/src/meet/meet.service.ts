@@ -79,7 +79,9 @@ export class MeetService {
             client.join(roomId);
             return;
         }
-        client.emit('ready-to-ask');
+        client.emit('connection-status', {
+            status: 'ask-to-join',
+        });
     }
 
     public async updateUserStatus() {

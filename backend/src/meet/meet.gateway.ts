@@ -20,7 +20,7 @@ import {
     MeetRemoteSocket,
 } from './types';
 
-@WebSocketGateway()
+@WebSocketGateway({ cors: '*' })
 export class MeetGateway
     implements OnGatewayInit, OnGatewayDisconnect, OnGatewayConnection
 {
@@ -37,15 +37,22 @@ export class MeetGateway
         }
         client.data = await this.meetService.userData(token, roomId);
         if (this.server.of('/').adapter.rooms.has(roomId)) {
-            this.meetService.joinUserToRoom(client, roomId);
+            if (client.data?.memberships[0]?.room.id === roomId) {
+                this.handleJoining(client, roomId);
+                return;
+            }
+            client.emit('connection-status', {
+                status: 'ask-to-join',
+            });
             return;
         }
         const hasPermission =
-            client.data?.memberships[0]?.role.name === Roles.ADMIN;
+            client.data?.memberships[0]?.role?.name === Roles.ADMIN;
         if (!hasPermission) {
             client.disconnect();
+            return;
         }
-        client.join(roomId);
+        this.handleJoining(client, roomId);
     }
 
     private async getRoomAdmin(
@@ -60,7 +67,34 @@ export class MeetGateway
         );
         return adminSocket;
     }
+
     //TODO: handle joining with notification
+    private async handleJoining(client: MeetSocket, roomId: string) {
+        client.join(roomId);
+        client.emit('connection-status', {
+            status: 'joined',
+        });
+    }
+
+    @SubscribeMessage('get-room')
+    public async getRoom(@ConnectedSocket() client: MeetSocket) {
+        const roomId = client.handshake.query.roomId as string;
+        if (client.rooms.has(roomId)) {
+            const sockets = await this.server.sockets.in(roomId).fetchSockets();
+            const socketIds = sockets
+                .map((socket) => socket.id)
+                .filter((id) => id !== client.id);
+            client.emit('room-users', socketIds);
+        }
+    }
+
+    @SubscribeMessage('ready-to-connect')
+    public async notify(@ConnectedSocket() client: MeetSocket) {
+        const roomId = client.handshake.query.roomId as string;
+        if (client.rooms.has(roomId)) {
+            client.broadcast.to(roomId).emit('user-connected', client.id);
+        }
+    }
 
     //todo: validate data
     @SubscribeMessage('join-room')
@@ -76,33 +110,37 @@ export class MeetGateway
         });
         client.data = data.guest;
     }
+    //todo: add role guard
 
-    @SubscribeMessage('accept-joining')
-    public async acceptJoining(client: MeetSocket, data: { socketId: string }) {
-        const guest = await this.server.in(data.socketId).fetchSockets();
-        guest[0].join(client.handshake.query.roomId);
-        client.to(data.socketId).emit('join-result', { result: true });
-    }
-
-    @SubscribeMessage('reject-joining')
-    public rejectJoining(client: MeetSocket, data: any): void {
-        client.to(data.socketId).emit('join-result', { result: false });
-        this.server.in(data.socketId).disconnectSockets();
+    @SubscribeMessage('joining-decision')
+    public async joiningDecision(
+        client: MeetSocket,
+        data: { socketId: string; decision: boolean },
+    ) {
+        const guest = this.server.sockets.sockets.get(data.socketId);
+        if (data.decision) {
+            this.handleJoining(guest, client.handshake.query.roomId as string);
+            client.to(data.socketId).emit('join-result', { result: true });
+        } else {
+            client.to(data.socketId).emit('join-result', { result: true });
+            guest.disconnect();
+        }
     }
 
     @SubscribeMessage('call-user')
     public callUser(client: MeetSocket, data: any): void {
-        client.to(data.to).emit('call-made', {
+        console.log(data.socketId);
+        this.server.to(data.socketId).emit('call-made', {
             offer: data.offer,
-            socket: client.id,
+            socketId: client.id,
         });
     }
 
     @SubscribeMessage('make-answer')
     public makeAnswer(client: MeetSocket, data: any): void {
-        client.to(data.to).emit('answer-made', {
+        this.server.to(data.socketId).emit('answer-made', {
             answer: data.answer,
-            socket: client.id,
+            socketId: client.id,
         });
     }
 
@@ -124,6 +162,9 @@ export class MeetGateway
     }
 
     public handleDisconnect(client: MeetSocket): void {
-        //TODO: broadcast that this client left the meeting
+        const roomId = client.handshake.query.roomId as string;
+        this.server
+            .to(client.handshake.query.roomId)
+            .emit('user-disconnected', client.id);
     }
 }
