@@ -6,7 +6,6 @@ import { useChangeTheme } from '../../theme/context/ThemeProvider';
 const ToggleTheme = () => {
     const theme = useTheme();
     const toggleTheme = useChangeTheme();
-    console.log(theme);
     
     return (
         <IconButton onClick={toggleTheme}>
