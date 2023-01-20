@@ -8,6 +8,29 @@ export class Peer {
             iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
         });
     }
+
+    public init(localStream: MediaStream | null) {
+        // this.connection.onicecandidate = (event) => {
+        //     if (event.candidate) {
+        //         client.emit('candidate', event.candidate);
+        //     }
+        // };
+        console.log(localStream);
+        
+        localStream?.getTracks().forEach((track) => {
+            this.addTrack(track, localStream);
+        });
+        this.connection.ontrack = ({ streams: [stream] }) => {
+            console.log(stream);
+
+            const video = this.getVideoElement();
+            if (video) {
+                video.srcObject = stream;
+            }
+            this.stream = stream;
+        };
+    }
+
     // call-user (send offer)
     public async createOffer(): Promise<RTCSessionDescriptionInit> {
         const offer = await this.connection.createOffer();
@@ -38,7 +61,26 @@ export class Peer {
         this.connection.addTrack(track, stream);
     }
 
+    public getVideoElement(): HTMLVideoElement | null {
+        return document.getElementById(this.id) as HTMLVideoElement | null;
+    }
+
     public clearConnection() {
         this.connection.close();
     }
 }
+export const createPeers = (): {
+    peers: { [id: string]: Peer };
+    add(id: string, peer: Peer): void;
+    remove(id: string): void;
+} => {
+    return {
+        peers: {},
+        add(id: string, peer: Peer) {
+            this.peers[id] = peer;
+        },
+        remove(id: string) {
+            delete this.peers[id];
+        },
+    };
+};

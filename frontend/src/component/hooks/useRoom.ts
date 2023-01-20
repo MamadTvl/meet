@@ -25,6 +25,11 @@ const useRoom = (args: Args): UseRoom => {
     const [shouldAskForJoin, setShouldAskForJoin] = useState(false);
 
     useEffect(() => {
+        
+        console.log(socket.current);
+        if (socket.current) {
+            return;
+        }
         const manager = new Manager(import.meta.env.VITE_SOCKET_URL, {
             query: { roomId },
             extraHeaders: {
@@ -34,7 +39,7 @@ const useRoom = (args: Args): UseRoom => {
         });
         socket.current = manager.socket('/');
         socket.current.on('connection-status', ({ status }) => {
-            console.log(status);
+            console.log('status', status);
 
             if (status === 'joined') {
                 setRoomStarted(true);
@@ -44,10 +49,12 @@ const useRoom = (args: Args): UseRoom => {
         });
         socket.current.on('new-request', onNewJoinRequest);
         return () => {
-            socket.current?.close();
+            const client = socket.current;
+            client?.offAny();
+            client?.close();
             socket.current = null;
         };
-    }, [roomId]);
+    }, [onNewJoinRequest, roomId]);
 
     const joinToRoom: UseRoom['joinToRoom'] = (userData, onResult) => {
         socket.current?.once('join-result', (data) => {
