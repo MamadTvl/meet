@@ -1,5 +1,9 @@
+import { useParams, useSearchParams } from 'react-router-dom';
+import Meet from '../room';
+
 const Room = () => {
-    return <div>Room</div>;
+    const { roomId } = useParams();
+    return <Meet roomId={roomId || ''} />;
 };
 
 export default Room;
