@@ -1,4 +1,3 @@
-import io, { Socket } from 'socket.io-client';
 export class Peer {
     public connection: RTCPeerConnection;
     public stream: MediaStream | null = null;

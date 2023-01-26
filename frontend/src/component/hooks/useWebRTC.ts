@@ -7,6 +7,7 @@ export interface UseWebRTC {
     peers: {
         [id: string]: Peer;
     };
+    handleNewJoinRequest: (socketId: string, decision: boolean) => void;
 }
 
 interface Args {
@@ -14,11 +15,11 @@ interface Args {
     socket: React.MutableRefObject<Socket | null>;
     roomStarted: boolean;
     localStream: MediaStream | null;
+    onNewJoinRequest: (data: { name: string, socketId: string }) => void;
 }
 
 const useWebRTC = (args: Args): UseWebRTC => {
-    const { socket, roomStarted, localStream } = args;
-    const getInitialRooms = useRef(false);
+    const { socket, roomStarted, localStream, onNewJoinRequest } = args;
     const [users, setUsers] = useState<string[]>([]);
     const peersInstance = useMemo(() => createPeers(), []);
     // const peers = useRef<{ [id: string]: Peer }>({});
@@ -40,7 +41,6 @@ const useWebRTC = (args: Args): UseWebRTC => {
             }
             setUsers(initialUsers);
             client.emit('ready-to-connect');
-            getInitialRooms.current = true;
         });
         client.on('user-connected', async (socketId: string) => {
             if (peersInstance.peers[socketId]) {
@@ -62,6 +62,7 @@ const useWebRTC = (args: Args): UseWebRTC => {
             peersInstance.remove(socketId);
             setUsers((prvState) => prvState.filter((id) => id !== socketId));
         });
+        client.on('new-request', onNewJoinRequest);
         client.on('answer-made', async (data) => {
             const currentPeers = peersInstance.peers;
             const socketPeer = currentPeers[data.socketId];
@@ -87,7 +88,7 @@ const useWebRTC = (args: Args): UseWebRTC => {
             client.emit('make-answer', { answer, socketId: data.socketId });
         });
         client.emit('get-room');
-    }, [socket, localStream, peersInstance]);
+    }, [socket, localStream, peersInstance, onNewJoinRequest]);
 
     useOneCall(() => {
         if (roomStarted && socket.current && localStream) {
@@ -101,7 +102,15 @@ const useWebRTC = (args: Args): UseWebRTC => {
             peersInstance.peers = {};
         };
     }, [roomStarted, localStream]);
-    return { users, peers: peersInstance.peers };
+
+    const handleNewJoinRequest = useCallback(
+        (socketId: string, decision: boolean) => {
+            socket.current?.emit('joining-decision', { socketId, decision });
+        },
+        [socket],
+    );
+
+    return { users, peers: peersInstance.peers, handleNewJoinRequest };
 };
 
 export default useWebRTC;

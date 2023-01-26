@@ -7,11 +7,15 @@ import {
     useScrollTrigger,
     Link,
 } from '@mui/material';
+import { useMemo } from 'react';
+import { matchRoutes, useLocation } from 'react-router-dom';
 import Logo from '../../../assets/linom.svg';
 import HeaderButtons from './HeaderButtons';
 
 const Header = () => {
     const trigger = useScrollTrigger();
+    const location = useLocation();
+
     return (
         <>
             <Slide appear={false} direction='down' in={!trigger}>

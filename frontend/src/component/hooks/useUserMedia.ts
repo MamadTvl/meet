@@ -17,11 +17,13 @@ const useUserMedia = (args: Args): UseUserMedia => {
     const [localStream, setLocalStream] = useState<MediaStream | null>(null);
 
     const getUserMedia = useCallback(async () => {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        console.log(devices);
         const stream = await navigator.mediaDevices.getUserMedia({
             video: {
                 width: { min: 640, ideal: 1920 },
                 height: { min: 400, ideal: 1080 },
-                aspectRatio: { ideal: 1.7777777778 },
+                aspectRatio: { ideal: 1.7777777778 }
             },
             audio: true,
         });
