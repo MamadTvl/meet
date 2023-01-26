@@ -104,11 +104,12 @@ export class MeetGateway
     ) {
         const adminSocket = await this.getRoomAdmin(data.roomId);
         adminSocket.emit('new-request', {
-            //FIXME: maybe our guest is authorized
-            guest: data.guest,
+            name: client.data
+                ? `${client.data.firstName || ''} ${client.data.lastName || ''}`
+                : data.guest.name,
             socketId: client.id,
         });
-        client.data = data.guest;
+        client.data = { firstName: data.guest.name };
     }
     //todo: add role guard
 

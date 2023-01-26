@@ -19,8 +19,7 @@ interface InterServerEvents {
 export interface JoinRoomData {
     roomId: string;
     guest?: {
-        firstName: string;
-        lastName: string;
+        name: string;
     };
 }
 
