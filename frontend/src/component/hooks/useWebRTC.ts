@@ -3,11 +3,16 @@ import { Socket } from 'socket.io-client';
 import { createPeers, Peer } from '../../utils/Peer';
 import useOneCall from './useOneCall';
 export interface UseWebRTC {
-    users: string[];
+    users: SocketUser[];
     peers: {
         [id: string]: Peer;
     };
     handleNewJoinRequest: (socketId: string, decision: boolean) => void;
+}
+
+export interface SocketUser {
+    id: string;
+    name: string;
 }
 
 interface Args {
@@ -15,12 +20,12 @@ interface Args {
     socket: React.MutableRefObject<Socket | null>;
     roomStarted: boolean;
     localStream: MediaStream | null;
-    onNewJoinRequest: (data: { name: string, socketId: string }) => void;
+    onNewJoinRequest: (data: { name: string; socketId: string }) => void;
 }
 
 const useWebRTC = (args: Args): UseWebRTC => {
     const { socket, roomStarted, localStream, onNewJoinRequest } = args;
-    const [users, setUsers] = useState<string[]>([]);
+    const [users, setUsers] = useState<SocketUser[]>([]);
     const peersInstance = useMemo(() => createPeers(), []);
     // const peers = useRef<{ [id: string]: Peer }>({});
 
@@ -31,18 +36,19 @@ const useWebRTC = (args: Args): UseWebRTC => {
         }
         console.log('start');
 
-        client.once('room-users', async (socketIds: string[]) => {
-            const initialUsers: string[] = [];
-            for (const socketId of socketIds) {
-                const peer = new Peer(socketId);
+        client.once('room-users', async (users: SocketUser[]) => {
+            const initialUsers: SocketUser[] = [];
+            for (const { id, name } of users) {
+                const peer = new Peer(id);
                 peer.init(localStream);
-                initialUsers.push(socketId);
-                peersInstance.add(socketId, peer);
+                initialUsers.push({ id, name });
+                peersInstance.add(id, peer);
             }
             setUsers(initialUsers);
             client.emit('ready-to-connect');
         });
-        client.on('user-connected', async (socketId: string) => {
+        client.on('user-connected', async (data: SocketUser) => {
+            const { id: socketId } = data;
             if (peersInstance.peers[socketId]) {
                 return;
             }
@@ -50,7 +56,7 @@ const useWebRTC = (args: Args): UseWebRTC => {
             peer.init(localStream);
             const offer = await peer.createOffer();
             peersInstance.add(socketId, peer);
-            setUsers((prvState) => [...prvState, socketId]);
+            setUsers((prvState) => [...prvState, data]);
             client.emit('call-user', { offer, socketId });
         });
         client.on('user-disconnected', (socketId: string) => {
@@ -60,7 +66,9 @@ const useWebRTC = (args: Args): UseWebRTC => {
             }
             peer.clearConnection();
             peersInstance.remove(socketId);
-            setUsers((prvState) => prvState.filter((id) => id !== socketId));
+            setUsers((prvState) =>
+                prvState.filter((user) => user.id !== socketId),
+            );
         });
         client.on('new-request', onNewJoinRequest);
         client.on('answer-made', async (data) => {

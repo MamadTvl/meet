@@ -22,7 +22,7 @@ const Home: React.FC = () => {
             <Grid container spacing={5} justifyContent={'center'}>
                 <Grid item xs={12}>
                     <Typography align={'center'} variant='h4' gutterBottom>
-                        An Open Source Meeting Application
+                        The Simple Meeting Application You Always Wanted
                     </Typography>
                 </Grid>
                 <Grid

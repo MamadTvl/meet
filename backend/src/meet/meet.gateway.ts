@@ -68,7 +68,6 @@ export class MeetGateway
         return adminSocket;
     }
 
-    //TODO: handle joining with notification
     private async handleJoining(client: MeetSocket, roomId: string) {
         client.join(roomId);
         client.emit('connection-status', {
@@ -82,8 +81,13 @@ export class MeetGateway
         if (client.rooms.has(roomId)) {
             const sockets = await this.server.sockets.in(roomId).fetchSockets();
             const socketIds = sockets
-                .map((socket) => socket.id)
-                .filter((id) => id !== client.id);
+                .map((socket) => ({
+                    id: socket.id,
+                    name: `${socket.data.firstName || ''} ${
+                        socket.data.lastName || ''
+                    }`,
+                }))
+                .filter((socket) => socket.id !== client.id);
             client.emit('room-users', socketIds);
         }
     }
@@ -92,7 +96,12 @@ export class MeetGateway
     public async notify(@ConnectedSocket() client: MeetSocket) {
         const roomId = client.handshake.query.roomId as string;
         if (client.rooms.has(roomId)) {
-            client.broadcast.to(roomId).emit('user-connected', client.id);
+            const name = `${client.data.firstName || ''} ${
+                client.data.lastName || ''
+            }`;
+            client.broadcast
+                .to(roomId)
+                .emit('user-connected', { id: client.id, name });
         }
     }
 
@@ -123,8 +132,7 @@ export class MeetGateway
             this.handleJoining(guest, client.handshake.query.roomId as string);
             client.to(data.socketId).emit('join-result', { result: true });
         } else {
-            client.to(data.socketId).emit('join-result', { result: true });
-            guest.disconnect();
+            client.to(data.socketId).emit('join-result', { result: false });
         }
     }
 

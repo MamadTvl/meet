@@ -1,4 +1,4 @@
-import { Box, Container, Grid } from '@mui/material';
+import { Box, Chip, Container, Grid } from '@mui/material';
 import React, {
     useCallback,
     useEffect,
@@ -11,7 +11,12 @@ import useCalculateCalculate from '../hooks/useCalculateLayout';
 import useRoom from '../hooks/useRoom';
 import useUserMedia from '../hooks/useUserMedia';
 import useWebRTC from '../hooks/useWebRTC';
-import { MeetContainer, Video, VideoContainer } from '../styled/video';
+import {
+    MeetContainer,
+    StreamChip,
+    Video,
+    VideoContainer,
+} from '../styled/video';
 import MeetController from './MeetController';
 import RequestAlert from './RequestAlert';
 
@@ -50,14 +55,17 @@ const Meet: React.FC<Props> = ({ roomId, roomStarted, socket }) => {
         onNewJoinRequest: onNewJoinRequest,
     });
 
-    const onMakeRequestDecision = useCallback((decision: boolean) => () => {
-        handleNewJoinRequest(requestAlertProps.id, decision);
-        setRequestAlertProps({
-            open: false,
-            id: '',
-            name: '',
-        });
-    }, [handleNewJoinRequest, requestAlertProps.id]);
+    const onMakeRequestDecision = useCallback(
+        (decision: boolean) => () => {
+            handleNewJoinRequest(requestAlertProps.id, decision);
+            setRequestAlertProps({
+                open: false,
+                id: '',
+                name: '',
+            });
+        },
+        [handleNewJoinRequest, requestAlertProps.id],
+    );
 
     useCalculateCalculate({
         containerRef: meetContainerRef,
@@ -75,10 +83,12 @@ const Meet: React.FC<Props> = ({ roomId, roomStarted, socket }) => {
             <MeetContainer ref={meetContainerRef}>
                 <VideoContainer>
                     <Video ref={localVideoRef} autoPlay muted />
+                    <StreamChip label={'You'} color={'secondary'} />
                 </VideoContainer>
-                {users.map((id) => (
-                    <VideoContainer key={id}>
-                        <Video id={id} autoPlay />
+                {users.map((user) => (
+                    <VideoContainer key={user.id}>
+                        <Video id={user.id} autoPlay />
+                        <StreamChip label={user.name} color={'secondary'} />
                     </VideoContainer>
                 ))}
             </MeetContainer>

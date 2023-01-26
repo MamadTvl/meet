@@ -1,4 +1,4 @@
-import { styled } from '@mui/material';
+import { Chip, styled } from '@mui/material';
 
 export const MeetContainer = styled('div')({
     display: 'flex',
@@ -13,6 +13,12 @@ export const VideoContainer = styled('div')({
     width: 'var(--width)',
     height: 'var(--height)',
 });
+
+export const StreamChip = styled(Chip)(({ theme }) => ({
+    position: 'absolute',
+    bottom: 16,
+    left: 16,
+}));
 
 export const Video = styled('video')({
     height: '100%',
