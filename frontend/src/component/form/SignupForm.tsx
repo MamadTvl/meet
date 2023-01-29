@@ -10,7 +10,9 @@ import {
 import { FormikConfig, FormikHandlers, FormikValues, useFormik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import * as yup from 'yup';
+import { useAuthStore } from '../../store/user';
 import { Api, apiEndpoint } from '../../utils/Api';
 
 const signupSchema = yup.object({
@@ -43,6 +45,9 @@ enum Step {
 const LoginForm = () => {
     const [step, setStep] = useState(Step.SEND_VERIFICATION_CODE);
     const { enqueueSnackbar } = useSnackbar();
+    const setUser = useAuthStore((store) => store.setUser);
+    const navigate = useNavigate();
+    
     const codeFormik = useFormik<CodeForm>({
         initialValues: { phone: '' },
         validationSchema: codeSchema,
@@ -79,6 +84,8 @@ const LoginForm = () => {
                 });
                 enqueueSnackbar(response.data.message, { variant: 'success' });
                 localStorage.setItem('meet-token', response.data.token);
+                setUser();
+                navigate('/profile');
             } catch (err: any) {
                 enqueueSnackbar(err.response.data.message, {
                     variant: 'error',

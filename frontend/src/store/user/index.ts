@@ -1,4 +1,4 @@
-import { Api, apiEndpoint } from './../../utils/Api';
+import { Api, apiEndpoint, getToken } from './../../utils/Api';
 import { create } from 'zustand';
 
 export interface User {
@@ -25,7 +25,11 @@ export const useAuthStore = create<AuthStore>()((set) => ({
             return { loading: true };
         });
         try {
-            const response = await Api<{ user: User }>(apiEndpoint.me);
+            const response = await Api<{ user: User }>(apiEndpoint.me, {
+                headers: {
+                    Authorization: getToken(),
+                },
+            });
             const user = response.data.user;
             set({ user, loading: false, isLogin: true });
         } catch (err) {

@@ -17,6 +17,8 @@ import {
 } from '../../utils/Api';
 import axios, { AxiosResponse, AxiosError } from 'axios';
 import { useSnackbar } from 'notistack';
+import { useAuthStore } from '../../store/user';
+import { useNavigate } from 'react-router-dom';
 
 const loginSchema = yup.object({
     phone: yup
@@ -32,6 +34,9 @@ type LoginForm = yup.InferType<typeof loginSchema>;
 
 const LoginForm = () => {
     const { enqueueSnackbar } = useSnackbar();
+    const setUser = useAuthStore((store) => store.setUser);
+    const navigate = useNavigate();
+
     const formik = useFormik<LoginForm>({
         initialValues: { password: '', phone: '' },
         validationSchema: loginSchema,
@@ -49,6 +54,8 @@ const LoginForm = () => {
                 });
                 enqueueSnackbar(response.data.message, { variant: 'success' });
                 localStorage.setItem('meet-token', response.data.token);
+                setUser();
+                navigate('/profile');
             } catch (err: any) {
                 enqueueSnackbar(err.response.data.message, {
                     variant: 'error',
