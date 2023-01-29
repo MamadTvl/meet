@@ -30,7 +30,6 @@ import { join } from 'path';
         // }),
         ServeStaticModule.forRoot({
             rootPath: join(__dirname, '..', 'public'),
-            renderPath: join(__dirname, '..', 'public'),
         }),
         TypeOrmModule.forRoot({
             type: 'mysql',
