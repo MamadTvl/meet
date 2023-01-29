@@ -5,17 +5,16 @@
 FROM node:18 As build-frontend
 
 WORKDIR /usr/src/app
-ENV NODE_ENV PRODUCTION
+
+COPY --chown=node:node ./frontend ./
+
+RUN yarn
 
 ARG API_BASE_URL
 ENV VITE_API_BASE_URL ${API_BASE_URL}
 
 ARG SOCKET_URL 
 ENV VITE_SOCKET_URL ${SOCKET_URL}
-
-COPY --chown=node:node ./frontend ./
-
-RUN yarn
 
 # Bundle app source
 COPY --chown=node:node . .
