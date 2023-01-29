@@ -9,8 +9,8 @@ import {
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm';
-import { AccessToken } from 'src/auth/entities/access-token.entity';
-import { Member } from 'src/rooms/entities/room-member.entity';
+import { AccessToken } from '../../auth/entities/access-token.entity';
+import { Member } from '../../rooms/entities/room-member.entity';
 
 @Entity('users')
 export class User {

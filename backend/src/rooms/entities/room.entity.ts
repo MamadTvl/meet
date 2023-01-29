@@ -1,4 +1,4 @@
-import { Member } from 'src/rooms/entities/room-member.entity';
+import { Member } from './room-member.entity';
 import {
     Column,
     CreateDateColumn,
@@ -7,7 +7,7 @@ import {
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm';
-import { Message } from 'src/messages/entities/message.entity';
+import { Message } from '../../messages/entities/message.entity';
 
 @Entity({ name: 'rooms' })
 export class Room {
