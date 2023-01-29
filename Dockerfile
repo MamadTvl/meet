@@ -32,7 +32,7 @@ FROM node:18-alpine As build-backend
 
 WORKDIR /usr/src/app
 
-COPY --chown=node:node ./frontend ./
+COPY --chown=node:node ./backend ./
 
 # Run the build command which creates the production bundle
 RUN yarn
@@ -51,10 +51,10 @@ USER node
 FROM node:18-alpine As production
 WORKDIR /app
 # Copy the bundled code from the build stage to the production image
-COPY --chown=node:node --from=backend-build /usr/src/app/node_modules ./node_modules
-COPY --chown=node:node --from=backend-build /usr/src/app/dist ./dist
+COPY --chown=node:node --from=build-backend /usr/src/app/node_modules ./node_modules
+COPY --chown=node:node --from=build-backend /usr/src/app/dist ./dist
 
-COPY --chown=node:node --from=frontend-build /usr/src/app/dist ./public
+COPY --chown=node:node --from=build-frontend /usr/src/app/dist ./public
 
 # Start the server using the production build
 CMD [ "node", "dist/main.js" ]
