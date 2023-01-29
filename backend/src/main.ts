@@ -9,6 +9,7 @@ async function bootstrap() {
     const app = await NestFactory.create<NestExpressApplication>(AppModule, {
         cors: { origin: '*' },
     });
+    app.setGlobalPrefix('/api');
     app.use(logger('dev'));
     app.useGlobalPipes(new ValidationPipe());
     const config = new DocumentBuilder()
@@ -24,6 +25,7 @@ async function bootstrap() {
         deepScanRoutes: true,
     });
     SwaggerModule.setup('docs', app, document, {
+        useGlobalPrefix: true,
         swaggerOptions: {
             persistAuthorization: true,
         },

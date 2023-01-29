@@ -16,6 +16,8 @@ import { RolesModule } from './roles/roles.module';
 import { AuthModule } from './auth/auth.module';
 import { AuthorizationMiddleware } from './common/middleware/authorization.middleware';
 import { MeetModule } from './meet/meet.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
     imports: [
@@ -26,6 +28,10 @@ import { MeetModule } from './meet/meet.module';
         //     allow_discovery: true,
         //     // proxied: 'true',
         // }),
+        ServeStaticModule.forRoot({
+            rootPath: join(__dirname, '..', 'public'),
+            renderPath: join(__dirname, '..', 'public'),
+        }),
         TypeOrmModule.forRoot({
             type: 'mysql',
             host: process.env.MYSQL_HOST,
