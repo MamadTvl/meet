@@ -18,7 +18,7 @@ const Profile = () => {
     return (
         <Container maxWidth={'sm'} sx={{ mt: 6 }}>
             <Grid container spacing={3}>
-                <Grid item xs={12} display={'flex'} justifyContent={'center'}>
+                <Grid item xs={12} >
                     <Card sx={{ p: 1.5 }}>
                         <Box
                             display={'flex'}
