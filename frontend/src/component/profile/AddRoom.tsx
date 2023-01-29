@@ -22,6 +22,7 @@ const AddRoom = () => {
             });
             enqueueSnackbar(res.data.message, { variant: 'success' });
             mutate(apiEndpoint.room);
+            setValue('');
         } catch (err: any) {
             const message = err.response.message;
             enqueueSnackbar(message, { variant: 'error' });
