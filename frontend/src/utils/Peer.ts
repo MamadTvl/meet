@@ -4,7 +4,14 @@ export class Peer {
 
     constructor(public id: string) {
         this.connection = new RTCPeerConnection({
-            iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
+            iceServers: [
+                { urls: 'stun:stun.l.google.com:19302' },
+                {
+                    urls: import.meta.env.VITE_CUSTOM_TURN_SERVER,
+                    username: import.meta.env.VITE_CUSTOM_TURN_SERVER_USERNAME,
+                    credential: import.meta.env.VITE_CUSTOM_TURN_PASSWORD
+                },
+            ],
         });
     }
 
