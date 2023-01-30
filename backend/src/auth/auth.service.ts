@@ -77,6 +77,7 @@ export class AuthService {
         const [token, hashToken] = this.createAccessToken();
         const accessToken = this.tokenRepository.create({
             token: hashToken,
+            expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now,
         });
         const user = this.userRepository.create({
             phone: signUpDto.phone,
