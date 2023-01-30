@@ -1,4 +1,4 @@
-import { Box, Button, Slide, styled, Typography } from '@mui/material';
+import { Box, Button, Grid, Slide, styled, Typography } from '@mui/material';
 
 const Alert = styled(Box)(({ theme }) => ({
     backgroundColor: theme.palette.background.default,
@@ -6,42 +6,49 @@ const Alert = styled(Box)(({ theme }) => ({
     width: 300,
     padding: 8,
     borderRadius: 4,
-    height: 100,
     position: 'absolute',
     top: 68,
 }));
 
 interface Props {
-    name: string;
-    id: string;
+    users: { name: string; id: string }[];
     open: boolean;
-    onMakeDecision: (decision: boolean) => () => void;
+    onMakeDecision: (id: string, decision: boolean) => () => void;
 }
-const RequestAlert: React.FC<Props> = ({ name, id, open, onMakeDecision }) => {
+const RequestAlert: React.FC<Props> = ({ open, onMakeDecision, users }) => {
     return (
         <Slide in={open}>
             <Alert
                 display={'flex'}
                 flexDirection={'column'}
                 justifyContent={'space-between'}>
-                <Typography
-                    align={
-                        'center'
-                    }>{`${name} wants to join the room`}</Typography>
-                <Box
-                    display={'flex'}
-                    alignItems={'center'}
-                    justifyContent={'flex-end'}>
-                    <Button variant='outlined' onClick={onMakeDecision(false)}>
-                        {'Reject'}
-                    </Button>
-                    <Button
-                        sx={{ ml: 1 }}
-                        variant='contained'
-                        onClick={onMakeDecision(true)}>
-                        {'Accept'}
-                    </Button>
-                </Box>
+                <Grid container spacing={2}>
+                    {users.map((user) => (
+                        <Grid item xs={12} key={user.id}>
+                            <Typography
+                                sx={{mb: 2}}
+                                align={
+                                    'center'
+                                }>{`${user.name} wants to join the room`}</Typography>
+                            <Box
+                                display={'flex'}
+                                alignItems={'center'}
+                                justifyContent={'center'}>
+                                <Button
+                                    variant='outlined'
+                                    onClick={onMakeDecision(user.id, false)}>
+                                    {'Reject'}
+                                </Button>
+                                <Button
+                                    sx={{ ml: 1 }}
+                                    variant='contained'
+                                    onClick={onMakeDecision(user.id, true)}>
+                                    {'Accept'}
+                                </Button>
+                            </Box>
+                        </Grid>
+                    ))}
+                </Grid>
             </Alert>
         </Slide>
     );

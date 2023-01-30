@@ -23,6 +23,12 @@ const Profile = () => {
                         <Box
                             display={'flex'}
                             alignItems={'center'}
+                            sx={{
+                                flexDirection: {
+                                    xs: 'column',
+                                    sm: 'row',
+                                },
+                            }}
                             justifyContent={'space-between'}>
                             <Box display={'flex'} alignItems={'center'}>
                                 <AccountCircleIcon />

@@ -43,7 +43,7 @@ const useUserMedia = (args: Args): UseUserMedia => {
         }
         return () => {
             if (localVideo) {
-                // localStream?.getTracks()?.forEach((track) => track.stop());
+                localStream?.getTracks()?.forEach((track) => track.stop());
                 localVideo.srcObject = null;
             }
         };

@@ -31,18 +31,22 @@ const Meet: React.FC<Props> = ({ roomId, roomStarted, socket }) => {
     const localVideoRef = useRef<HTMLVideoElement | null>(null);
     const meetContainerRef = useRef<HTMLDivElement | null>(null);
     const { localStream } = useUserMedia({ localVideoRef });
-    const [requestAlertProps, setRequestAlertProps] = useState({
+    const [requestAlertProps, setRequestAlertProps] = useState<{
+        open: boolean;
+        users: Array<{ name: string; id: string }>;
+    }>({
         open: false,
-        name: '',
-        id: '',
+        users: [],
     });
     const onNewJoinRequest = useCallback(
         (data: { name: string; socketId: string }) => {
-            setRequestAlertProps({
+            setRequestAlertProps((prvState) => ({
                 open: true,
-                id: data.socketId,
-                name: data.name,
-            });
+                users: [
+                    ...prvState.users,
+                    { id: data.socketId, name: data.name },
+                ],
+            }));
         },
         [],
     );
@@ -56,15 +60,16 @@ const Meet: React.FC<Props> = ({ roomId, roomStarted, socket }) => {
     });
 
     const onMakeRequestDecision = useCallback(
-        (decision: boolean) => () => {
-            handleNewJoinRequest(requestAlertProps.id, decision);
-            setRequestAlertProps({
-                open: false,
-                id: '',
-                name: '',
-            });
+        (id: string, decision: boolean) => () => {
+            handleNewJoinRequest(id, decision);
+            setRequestAlertProps((prvState) => ({
+                open:
+                    prvState.users.filter((user) => user.id !== id).length !==
+                    0,
+                users: prvState.users.filter((user) => user.id !== id),
+            }));
         },
-        [handleNewJoinRequest, requestAlertProps.id],
+        [handleNewJoinRequest],
     );
 
     useCalculateCalculate({
@@ -82,12 +87,12 @@ const Meet: React.FC<Props> = ({ roomId, roomStarted, socket }) => {
             height={'calc(100vh - 128px)'}>
             <MeetContainer ref={meetContainerRef}>
                 <VideoContainer>
-                    <Video ref={localVideoRef} autoPlay muted />
+                    <Video playsInline ref={localVideoRef} autoPlay muted />
                     <StreamChip label={'You'} color={'secondary'} />
                 </VideoContainer>
                 {users.map((user) => (
                     <VideoContainer key={user.id}>
-                        <Video id={user.id} autoPlay />
+                        <Video playsInline id={user.id} autoPlay />
                         <StreamChip label={user.name} color={'secondary'} />
                     </VideoContainer>
                 ))}

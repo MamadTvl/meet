@@ -29,6 +29,7 @@ const MeetGateway: React.FC<Props> = (props) => {
                 direction={'column'}>
                 <Grid item xs={12}>
                     <Video
+                        playsInline
                         ref={videoRef}
                         autoPlay
                         muted

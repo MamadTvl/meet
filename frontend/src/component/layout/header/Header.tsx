@@ -34,7 +34,7 @@ const Header = () => {
                                         width={40}
                                         height={40}
                                     />
-                                    <Typography variant='h6' color={'primary'}>
+                                    <Typography sx={{display: {xs: 'none', sm: 'block'}}} variant='h6' color={'primary'}>
                                         {'Linom Meet'}
                                     </Typography>
                                 </Box>

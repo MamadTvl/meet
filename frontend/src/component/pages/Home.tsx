@@ -30,6 +30,12 @@ const Home: React.FC = () => {
                     xs={12}
                     display={'flex'}
                     justifyContent={'center'}
+                    sx={{
+                        flexDirection: {
+                            xs: 'column',
+                            md: 'row',
+                        },
+                    }}
                     alignItems={'center'}>
                     <Button
                         onClick={() =>
@@ -44,14 +50,22 @@ const Home: React.FC = () => {
                         color={'primary'}>
                         {'Start the meeting'}
                     </Button>
-                    <Typography sx={{ ml: 1, mr: 1 }}>{'or'}</Typography>
+                    <Typography
+                        sx={{
+                            ml: { xs: 0, sm: 1 },
+                            mr: { xs: 0, sm: 1 },
+                            mt: { xs: 1.5, sm: 0 },
+                            mb: { xs: 1.5, sm: 0 },
+                        }}>
+                        {'or'}
+                    </Typography>
                     <Box
                         component={'form'}
                         display={'flex'}
                         onSubmit={() => navigate('/room/' + roomId)}
                         alignItems={'center'}>
                         <TextField
-                            sx={{ width: 340 }}
+                            sx={{ width: { xs: 220, sm: 340 } }}
                             placeholder='enter the meeting code'
                             value={roomId}
                             onChange={(e) => setRoomId(e.target.value)}
