@@ -9,7 +9,7 @@ export class Peer {
                 {
                     urls: import.meta.env.VITE_CUSTOM_TURN_SERVER,
                     username: import.meta.env.VITE_CUSTOM_TURN_SERVER_USERNAME,
-                    credential: import.meta.env.VITE_CUSTOM_TURN_PASSWORD
+                    credential: import.meta.env.VITE_CUSTOM_TURN_SERVER_PASSWORD
                 },
             ],
         });
