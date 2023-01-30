@@ -15,7 +15,7 @@ export class Peer {
         //     }
         // };
         console.log(localStream);
-        
+
         localStream?.getTracks().forEach((track) => {
             this.addTrack(track, localStream);
         });
@@ -32,7 +32,10 @@ export class Peer {
 
     // call-user (send offer)
     public async createOffer(): Promise<RTCSessionDescriptionInit> {
-        const offer = await this.connection.createOffer();
+        const offer = await this.connection.createOffer({
+            offerToReceiveAudio: true,
+            offerToReceiveVideo: true,
+        });
         await this.connection.setLocalDescription(
             new RTCSessionDescription(offer),
         );
