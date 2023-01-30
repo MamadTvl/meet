@@ -9,11 +9,6 @@ export class Peer {
     }
 
     public init(localStream: MediaStream | null) {
-        // this.connection.onicecandidate = (event) => {
-        //     if (event.candidate) {
-        //         client.emit('candidate', event.candidate);
-        //     }
-        // };
         console.log(localStream);
 
         localStream?.getTracks().forEach((track) => {

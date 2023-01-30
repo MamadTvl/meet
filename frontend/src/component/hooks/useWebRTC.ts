@@ -53,6 +53,14 @@ const useWebRTC = (args: Args): UseWebRTC => {
                 return;
             }
             const peer = new Peer(socketId);
+            peer.connection.onicecandidate = (event) => {
+                if (event.candidate) {
+                    client.emit('make-candidate', {
+                        candidate: event.candidate,
+                        socketId,
+                    });
+                }
+            };
             peer.init(localStream);
             const offer = await peer.createOffer();
             peersInstance.add(socketId, peer);
@@ -95,6 +103,14 @@ const useWebRTC = (args: Args): UseWebRTC => {
 
             client.emit('make-answer', { answer, socketId: data.socketId });
         });
+        client.on(
+            'candidate-made',
+            (data: { socketId: string; iceCandidate: RTCIceCandidate }) => {
+                const currentPeers = peersInstance.peers;
+                const peer = currentPeers[data.socketId];
+                peer.addIceCandidate(data.iceCandidate);
+            },
+        );
         client.emit('get-room');
     }, [socket, localStream, peersInstance, onNewJoinRequest]);
 

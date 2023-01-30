@@ -153,6 +153,14 @@ export class MeetGateway
         });
     }
 
+    @SubscribeMessage('make-candidate')
+    public makeCandidate(client: MeetSocket, data: any): void {
+        this.server.to(data.socketId).emit('candidate-made', {
+            candidate: data.candidate,
+            socketId: client.id,
+        });
+    }
+
     @SubscribeMessage('send-message')
     public sendMessage(client: MeetSocket, data: { message: string }) {
         if (client.data) {
