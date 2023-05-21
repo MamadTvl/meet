@@ -1,0 +1,47 @@
+version: '3'
+services:
+  mysql:
+    image: mysql:8
+    restart: always
+    container_name: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_ROOT_HOST=%
+      - MYSQL_ALLOW_EMPTY_PASSWORD=ok
+      - TZ=${TZ}
+    ports:
+      - "${MYSQL_PORT}:3306"
+    volumes:
+      - /meet/mysql:/var/lib/mysql
+      - ./mysql.cnf:/etc/mysql/my.cnf:ro
+    networks:
+      - mysql
+
+  meet:
+    image: meet
+    container_name: meet
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - API_BASE_URL=https://meet.linom.org/api
+        - SOKCET_URL=https://meet.linom.org
+        - TURN_SERVER=${TURN_SERVER}
+        - TURN_USERNAME=${TURN_USERNAME}
+        - TURN_PASSWORD=${TURN_PASSWORD}
+    env_file:
+      - meet.env
+    networks:
+      - linom
+    depends_on:
+      - mysql
+    ports:
+      - "${MEET_PORT}:3000"
+
+networks:
+  mysql:
