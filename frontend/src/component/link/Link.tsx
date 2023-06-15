@@ -1,4 +1,4 @@
-import { CircularProgress } from '@mui/material';
+import { Box, CircularProgress } from '@mui/material';
 import React, { PropsWithChildren, useMemo } from 'react';
 import {
     BrowserRouter,
@@ -33,7 +33,17 @@ export const ProtectedRoute: React.FC<PropsWithChildren> = ({ children }) => {
     if (!loading && isLogin) {
         return <>{children}</>;
     }
-    return <CircularProgress size={24} color={'secondary'} />;
+    return (
+        <Box
+            display={'flex'}
+            flexDirection={'column'}
+            justifyContent={'center'}
+            height={'100vh'}
+            width={'100%'}
+            alignItems={'center'}>
+            <CircularProgress size={48} color={'secondary'} />
+        </Box>
+    );
 };
 
 export function Router(props: { children?: React.ReactNode }) {

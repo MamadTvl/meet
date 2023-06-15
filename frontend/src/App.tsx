@@ -14,6 +14,7 @@ import Layout from './component/layout';
 import { ProtectedRoute, Router } from './component/link/Link';
 import SignUp from './component/pages/SignUp';
 import { SnackbarProvider } from 'notistack';
+import { SWRConfig } from 'swr';
 
 const App: React.FC = () => {
     return (
@@ -21,22 +22,27 @@ const App: React.FC = () => {
             <ThemeProvider>
                 <CssBaseline />
                 <SnackbarProvider>
-                    <Layout>
-                        <Routes>
-                            <Route path='/' element={<Home />} />
-                            <Route path='/login' element={<Login />} />
-                            <Route path='/sign-up' element={<SignUp />} />
-                            <Route
-                                path='/profile'
-                                element={
-                                    <ProtectedRoute>
-                                        <Profile />
-                                    </ProtectedRoute>
-                                }
-                            />
-                            <Route path='/room/:roomId' element={<Room />} />
-                        </Routes>
-                    </Layout>
+                    <SWRConfig>
+                        <Layout>
+                            <Routes>
+                                <Route path='/' element={<Home />} />
+                                <Route path='/login' element={<Login />} />
+                                <Route path='/sign-up' element={<SignUp />} />
+                                <Route
+                                    path='/profile'
+                                    element={
+                                        <ProtectedRoute>
+                                            <Profile />
+                                        </ProtectedRoute>
+                                    }
+                                />
+                                <Route
+                                    path='/room/:roomId'
+                                    element={<Room />}
+                                />
+                            </Routes>
+                        </Layout>
+                    </SWRConfig>
                 </SnackbarProvider>
             </ThemeProvider>
         </Router>

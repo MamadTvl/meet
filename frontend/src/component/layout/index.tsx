@@ -5,10 +5,10 @@ import Header from './header/Header';
 
 const Layout: React.FC<PropsWithChildren> = ({ children }) => {
     const setUser = useAuthStore((store) => store.setUser);
-    
+
     useEffect(() => {
         setUser();
-    }, []);
+    }, [setUser]);
     return (
         <>
             <Header />

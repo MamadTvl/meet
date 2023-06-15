@@ -1,44 +1,16 @@
-import {
-    Box,
-    Card,
-    CircularProgress,
-    IconButton,
-    styled,
-    Typography,
-} from '@mui/material';
+import { Box, Card, CircularProgress, Typography } from '@mui/material';
 import useSwr from 'swr';
 import { Api, apiEndpoint, getToken } from '../../utils/Api';
-import VideoChatIcon from '@mui/icons-material/VideoChat';
-import EditIcon from '@mui/icons-material/Edit';
-import { useNavigate } from 'react-router-dom';
-
-const RoomBox = styled(Box)(({ theme }) => ({
-    width: '100%',
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 1,
-    padding: 10,
-}));
-
-const Bullet = styled('div')(({ theme }) => ({
-    borderRadius: '50%',
-    backgroundColor: theme.palette.secondary.main,
-    opacity: 0.4,
-    width: 12,
-    height: 12,
-    marginRight: 8,
-}));
+import RoomBox from './RoomBox';
 
 const UserRooms = () => {
-    const { data: rooms, mutate } = useSwr<
+    const { data: rooms } = useSwr<
         Array<{ id: string; name: string; isActive: boolean }>
     >(apiEndpoint.room, (key) =>
         Api(key, { headers: { authorization: getToken() } }).then(
             (res) => res.data.rooms,
         ),
     );
-    const navigate = useNavigate();
 
     return (
         <Card sx={{ p: 1.5 }}>
@@ -51,21 +23,7 @@ const UserRooms = () => {
                 </Box>
             )}
             {rooms?.map((room) => (
-                <RoomBox key={room.id}>
-                    <Box display={'flex'} alignItems={'center'}>
-                        <Bullet />
-                        <Typography color={'secondary'}>{room.name}</Typography>
-                    </Box>
-                    <Box display={'flex'} alignItems={'center'}>
-                        <IconButton>
-                            <EditIcon />
-                        </IconButton>
-                        <IconButton
-                            onClick={() => navigate(`/room/${room.id}`)}>
-                            <VideoChatIcon />
-                        </IconButton>
-                    </Box>
-                </RoomBox>
+                <RoomBox {...room} key={room.id} />
             ))}
         </Card>
     );

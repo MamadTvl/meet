@@ -15,15 +15,18 @@ export interface AuthStore {
     logout: () => void;
 }
 
-export const useAuthStore = create<AuthStore>()((set) => ({
+export const useAuthStore = create<AuthStore>()((set, get) => ({
     isLogin: false,
     loading: true,
     user: null,
     logout: () => set({ isLogin: false, loading: false }),
     setUser: async () => {
-        set(() => {
-            return { loading: true };
-        });
+        const { user } = get();
+        if (!user) {
+            set(() => {
+                return { loading: true };
+            });
+        }
         try {
             const response = await Api<{ user: User }>(apiEndpoint.me, {
                 headers: {

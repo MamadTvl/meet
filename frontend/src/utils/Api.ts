@@ -1,6 +1,5 @@
 import axios from 'axios';
 
-
 export const apiEndpoint = {
     login: '/auth/login',
     sendVerifyCode: '/auth/send-verify-code',
@@ -11,7 +10,6 @@ export const apiEndpoint = {
 };
 
 export const getToken = () => `Bearer ${localStorage.getItem('meet-token')}`;
-
 
 export const Api = axios.create({
     baseURL: import.meta.env.VITE_API_BASE_URL,
