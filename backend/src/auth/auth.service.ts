@@ -122,4 +122,11 @@ export class AuthService {
         });
         return `${newAccessToken.id}|${token}`;
     }
+
+    async logout(userId: number) {
+        await this.tokenRepository.update(
+            { user: { id: userId } },
+            { deletedAt: new Date() },
+        );
+    }
 }

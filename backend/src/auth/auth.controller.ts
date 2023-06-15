@@ -7,6 +7,7 @@ import {
     HttpCode,
     UseGuards,
     Req,
+    Patch,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
@@ -41,6 +42,15 @@ export class AuthController {
     async login(@Body() loginDto: LoginDto) {
         const token = await this.authService.login(loginDto);
         return { token };
+    }
+
+    @UseGuards(AuthGuard)
+    @Patch('logout')
+    async logout(@Req() req: Request) {
+        await this.authService.logout(req.user.id);
+        return {
+            message: 'logout successful',
+        };
     }
 
     @UseGuards(AuthGuard)
