@@ -34,6 +34,25 @@ const UserCard = () => {
             });
     };
 
+    const handleLogout = () => {
+        Api.patch(apiEndpoint.logout)
+            .then((res) => {
+                enqueueSnackbar(res.data?.message || 'Ok', {
+                    variant: 'success',
+                });
+                setUser();
+            })
+            .catch((err) => {
+                console.error(err);
+                enqueueSnackbar(
+                    err?.response?.data?.message || 'Unexpected Error',
+                    {
+                        variant: 'error',
+                    },
+                );
+            });
+    };
+
     return (
         <Card sx={{ p: 1.5 }}>
             <Box
@@ -47,14 +66,21 @@ const UserCard = () => {
                 }}
                 justifyContent={'space-between'}>
                 <Box display={'flex'} alignItems={'center'}>
-                    <AccountCircleIcon sx={{mr: 1.5}}  />
+                    <AccountCircleIcon sx={{ mr: 1.5 }} />
                     <Typography>{`${user?.firstName || ''} ${
                         user?.lastName || ''
                     }`}</Typography>
                 </Box>
                 <Box display={'flex'} alignItems={'center'}>
-                    <Button onClick={() => setOpenDialog(true)} variant='outlined'>{'Edit'}</Button>
-                    <Button variant='contained' sx={{ ml: 1 }}>
+                    <Button
+                        onClick={() => setOpenDialog(true)}
+                        variant='outlined'>
+                        {'Edit'}
+                    </Button>
+                    <Button
+                        onClick={handleLogout}
+                        variant='contained'
+                        sx={{ ml: 1 }}>
                         {'Logout'}
                     </Button>
                 </Box>

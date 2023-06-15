@@ -2,6 +2,7 @@ import axios from 'axios';
 
 export const apiEndpoint = {
     login: '/auth/login',
+    logout: '/auth/logout',
     sendVerifyCode: '/auth/send-verify-code',
     signup: '/auth/signup',
     me: '/auth/me',
