@@ -94,6 +94,26 @@ const Meet: React.FC<Props> = ({ roomId, roomStarted, socket }) => {
         opacity: 1,
     };
 
+    const muteIcon = (
+        <Box
+            display={'flex'}
+            flexDirection={'column'}
+            alignItems={'center'}
+            justifyContent={'center'}
+            sx={{
+                position: 'absolute',
+                right: 16,
+                bottom: 16,
+                width: 32,
+                height: 32,
+                borderRadius: '50%',
+                backgroundColor: 'secondary.dark',
+            }}
+            bgcolor={'secondary'}>
+            <MicOffIcon />
+        </Box>
+    );
+
     return (
         <Box
             margin={0}
@@ -106,25 +126,7 @@ const Meet: React.FC<Props> = ({ roomId, roomStarted, socket }) => {
                 <VideoContainer>
                     <Video playsInline ref={localVideoRef} autoPlay muted />
                     <StreamChip label={'You'} color={'secondary'} />
-                    {muted && (
-                        <Box
-                            display={'flex'}
-                            flexDirection={'column'}
-                            alignItems={'center'}
-                            justifyContent={'center'}
-                            sx={{
-                                position: 'absolute',
-                                right: 16,
-                                bottom: 16,
-                                width: 32,
-                                height: 32,
-                                borderRadius: '50%',
-                                backgroundColor: 'secondary.dark'
-                            }}
-                            bgcolor={'secondary'}>
-                            <MicOffIcon />
-                        </Box>
-                    )}
+                    {muted && muteIcon}
                 </VideoContainer>
                 {users.map((user) => (
                     <VideoContainer key={user.id}>
@@ -138,11 +140,7 @@ const Meet: React.FC<Props> = ({ roomId, roomStarted, socket }) => {
                             autoPlay
                         />
                         <StreamChip label={user.name} color={'secondary'} />
-                        {user.muted && (
-                            <MicOffIcon
-                                sx={{ position: 'absolute', left: 2 }}
-                            />
-                        )}
+                        {user.muted && muteIcon}
                     </VideoContainer>
                 ))}
             </MeetContainer>
