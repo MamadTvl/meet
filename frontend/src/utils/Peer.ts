@@ -3,13 +3,6 @@ export class Peer {
     public stream: MediaStream | null = null;
 
     constructor(public id: string) {
-        const hasCustomServer = import.meta.env.VITE_CUSTOM_TURN_SERVER !== '';
-        const server = hasCustomServer && {
-            urls: import.meta.env.VITE_CUSTOM_TURN_SERVER,
-            username: import.meta.env.VITE_CUSTOM_TURN_SERVER_USERNAME,
-            credential: import.meta.env.VITE_CUSTOM_TURN_SERVER_PASSWORD,
-        };
-
         this.connection = new RTCPeerConnection({
             iceServers: [
                 {
@@ -21,7 +14,12 @@ export class Peer {
                         'stun:stun4.l.google.com:19302',
                     ],
                 },
-                // server ? server,
+                {
+                    urls: import.meta.env.VITE_CUSTOM_TURN_SERVER,
+                    username: import.meta.env.VITE_CUSTOM_TURN_SERVER_USERNAME,
+                    credential: import.meta.env
+                        .VITE_CUSTOM_TURN_SERVER_PASSWORD,
+                },
             ],
         });
     }
