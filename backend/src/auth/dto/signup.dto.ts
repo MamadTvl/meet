@@ -9,14 +9,8 @@ import {
 
 export class SendVerifyCodeDto {
     @ApiPropertyOptional()
-    @ValidateIf((obj) => !obj.email)
     @IsPhoneNumber('IR')
     phone: string;
-
-    @ApiPropertyOptional()
-    @ValidateIf((obj) => !obj.phone)
-    @IsEmail()
-    email: string;
 }
 
 export class SignUpDto {
