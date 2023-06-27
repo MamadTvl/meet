@@ -1,4 +1,4 @@
-import { Chip, styled } from '@mui/material';
+import { Box, Chip, styled } from '@mui/material';
 
 export const MeetContainer = styled('div')({
     display: 'flex',
@@ -21,6 +21,13 @@ export const StreamChip = styled(Chip)(({ theme }) => ({
 }));
 
 export const Video = styled('video')({
+    transition: 'opacity .3s',
     height: '100%',
     width: '100%',
+});
+
+export const VideoPlaceHolder = styled(Box)({
+    height: '100%',
+    width: '100%',
+    background: '#000'
 });

@@ -3,34 +3,34 @@ export class Peer {
     public stream: MediaStream | null = null;
 
     constructor(public id: string) {
-        this.connection = new RTCPeerConnection({
-            iceServers: [
-                {
-                    urls: [
-                        'stun:stun.l.google.com:19302',
-                        'stun:stun1.l.google.com:19302',
-                        'stun:stun2.l.google.com:19302',
-                        'stun:stun3.l.google.com:19302',
-                        'stun:stun4.l.google.com:19302',
-                    ],
-                },
-                {
-                    urls: import.meta.env.VITE_CUSTOM_TURN_SERVER,
-                    username: import.meta.env.VITE_CUSTOM_TURN_SERVER_USERNAME,
-                    credential: import.meta.env
-                        .VITE_CUSTOM_TURN_SERVER_PASSWORD,
-                },
+        const iceServers: RTCIceServer[] = [];
+        iceServers.push({
+            urls: [
+                'stun:stun.l.google.com:19302',
+                'stun:stun1.l.google.com:19302',
+                'stun:stun2.l.google.com:19302',
+                'stun:stun3.l.google.com:19302',
+                'stun:stun4.l.google.com:19302',
             ],
+        });
+        const hasTurnServer = import.meta.env.VITE_CUSTOM_TURN_SERVER !== '';
+        if (hasTurnServer) {
+            iceServers.push({
+                urls: import.meta.env.VITE_CUSTOM_TURN_SERVER,
+                username: import.meta.env.VITE_CUSTOM_TURN_SERVER_USERNAME,
+                credential: import.meta.env.VITE_CUSTOM_TURN_SERVER_PASSWORD,
+            });
+        }
+        this.connection = new RTCPeerConnection({
+            iceServers,
         });
     }
 
     public init(localStream: MediaStream | null) {
-
         localStream?.getTracks().forEach((track) => {
             this.addTrack(track, localStream);
         });
         this.connection.ontrack = ({ streams: [stream] }) => {
-
             const video = this.getVideoElement();
             if (video) {
                 video.srcObject = stream;

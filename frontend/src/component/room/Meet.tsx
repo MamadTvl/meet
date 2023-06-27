@@ -1,5 +1,6 @@
 import { Box, Chip, Container, Grid } from '@mui/material';
 import React, {
+    CSSProperties,
     useCallback,
     useEffect,
     useMemo,
@@ -16,10 +17,11 @@ import {
     StreamChip,
     Video,
     VideoContainer,
+    VideoPlaceHolder,
 } from '../styled/video';
 import MeetController from './MeetController';
 import RequestAlert from './RequestAlert';
-
+import MicOffIcon from '@mui/icons-material/MicOff';
 interface Props {
     roomId: string;
     socket: React.MutableRefObject<Socket | null>;
@@ -83,6 +85,15 @@ const Meet: React.FC<Props> = ({ roomId, roomStarted, socket }) => {
         videoCount: users.length + 1,
     });
 
+    const hiddenStyle: CSSProperties = {
+        visibility: 'hidden',
+        opacity: 0,
+    };
+    const visibleStyle: CSSProperties = {
+        visibility: 'visible',
+        opacity: 1,
+    };
+
     return (
         <Box
             margin={0}
@@ -95,11 +106,43 @@ const Meet: React.FC<Props> = ({ roomId, roomStarted, socket }) => {
                 <VideoContainer>
                     <Video playsInline ref={localVideoRef} autoPlay muted />
                     <StreamChip label={'You'} color={'secondary'} />
+                    {muted && (
+                        <Box
+                            display={'flex'}
+                            flexDirection={'column'}
+                            alignItems={'center'}
+                            justifyContent={'center'}
+                            sx={{
+                                position: 'absolute',
+                                right: 16,
+                                bottom: 16,
+                                width: 32,
+                                height: 32,
+                                borderRadius: '50%',
+                                backgroundColor: 'secondary.dark'
+                            }}
+                            bgcolor={'secondary'}>
+                            <MicOffIcon />
+                        </Box>
+                    )}
                 </VideoContainer>
                 {users.map((user) => (
                     <VideoContainer key={user.id}>
-                        <Video playsInline id={user.id} autoPlay />
+                        <VideoPlaceHolder
+                            style={user.videoOff ? visibleStyle : hiddenStyle}
+                        />
+                        <Video
+                            style={user.videoOff ? hiddenStyle : visibleStyle}
+                            playsInline
+                            id={user.id}
+                            autoPlay
+                        />
                         <StreamChip label={user.name} color={'secondary'} />
+                        {user.muted && (
+                            <MicOffIcon
+                                sx={{ position: 'absolute', left: 2 }}
+                            />
+                        )}
                     </VideoContainer>
                 ))}
             </MeetContainer>

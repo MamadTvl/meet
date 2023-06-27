@@ -119,7 +119,33 @@ const useWebRTC = (args: Args): UseWebRTC => {
                 peer.addIceCandidate(data.iceCandidate);
             },
         );
-        // client.on('action-made')
+        client.on(
+            'action-made',
+            (action: {
+                data: { type: 'audio' | 'video'; off: boolean };
+                socketId: string;
+            }) => {
+                const {
+                    data: { type, off },
+                    socketId,
+                } = action;
+                setUsers((prv) => {
+                    const copy = structuredClone(prv);
+                    const userIndex = copy.findIndex(
+                        (user) => user.id === socketId,
+                    );
+                    if (userIndex === -1) {
+                        return prv;
+                    }
+                    if (type === 'audio') {
+                        copy[userIndex].muted = off;
+                    } else if (type === 'video') {
+                        copy[userIndex].videoOff = off;
+                    }
+                    return copy;
+                });
+            },
+        );
         client.emit('get-room');
     }, [socket, localStream, peersInstance, onNewJoinRequest]);
 
@@ -143,6 +169,13 @@ const useWebRTC = (args: Args): UseWebRTC => {
         [socket],
     );
 
+    const emitAction = useCallback(
+        (type: 'audio' | 'video', off: boolean) => {
+            socket.current?.emit('make-action', { type, off });
+        },
+        [socket],
+    );
+
     const videoToggle = useCallback(() => {
         if (!localStream) {
             return;
@@ -158,8 +191,11 @@ const useWebRTC = (args: Args): UseWebRTC => {
                 peer.replaceTrack(localStream, 'video');
             }
         }
-        setVideoOff((prv) => !prv);
-    }, [localStream, peersInstance.peers]);
+        setVideoOff((prv) => {
+            emitAction('video', !prv);
+            return !prv;
+        });
+    }, [emitAction, localStream, peersInstance.peers]);
 
     const audioToggle = useCallback(() => {
         if (!localStream) {
@@ -176,8 +212,11 @@ const useWebRTC = (args: Args): UseWebRTC => {
                 peer.replaceTrack(localStream, 'audio');
             }
         }
-        setMuted((prv) => !prv);
-    }, [localStream, peersInstance.peers]);
+        setMuted((prv) => {
+            emitAction('audio', !prv);
+            return !prv;
+        });
+    }, [emitAction, localStream, peersInstance.peers]);
 
     return {
         users,
