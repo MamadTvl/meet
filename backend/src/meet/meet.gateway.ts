@@ -192,7 +192,7 @@ export class MeetGateway
             client.data.videoOff = data.off;
         }
         client.broadcast.to(client.handshake.query.roomId).emit('action-made', {
-            from: client.data,
+            socketId: client.id,
             data,
         });
     }
