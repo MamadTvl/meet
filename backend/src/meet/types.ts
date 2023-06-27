@@ -23,6 +23,18 @@ export interface JoinRoomData {
     };
 }
 
-export type MeetSocket = Socket<DefaultEventsMap, any, DefaultEventsMap, User>;
-export type MeetRemoteSocket = RemoteSocket<DefaultEventsMap, User>;
-export type MeetServer = Server<DefaultEventsMap, any, DefaultEventsMap, User>;
+type SocketUser = User & { muted?: boolean; videoOff?: boolean };
+
+export type MeetSocket = Socket<
+    DefaultEventsMap,
+    any,
+    DefaultEventsMap,
+    SocketUser
+>;
+export type MeetRemoteSocket = RemoteSocket<DefaultEventsMap, SocketUser>;
+export type MeetServer = Server<
+    DefaultEventsMap,
+    any,
+    DefaultEventsMap,
+    SocketUser
+>;

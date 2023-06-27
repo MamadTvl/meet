@@ -17,6 +17,8 @@ export interface UseWebRTC {
 export interface SocketUser {
     id: string;
     name: string;
+    muted: boolean;
+    videoOff: boolean;
 }
 
 interface Args {
@@ -47,7 +49,7 @@ const useWebRTC = (args: Args): UseWebRTC => {
             for (const { id, name } of users) {
                 const peer = new Peer(id);
                 peer.init(localStream);
-                initialUsers.push({ id, name });
+                initialUsers.push({ id, name, muted: false, videoOff: false });
                 peersInstance.add(id, peer);
             }
             setUsers(initialUsers);
@@ -117,6 +119,7 @@ const useWebRTC = (args: Args): UseWebRTC => {
                 peer.addIceCandidate(data.iceCandidate);
             },
         );
+        // client.on('action-made')
         client.emit('get-room');
     }, [socket, localStream, peersInstance, onNewJoinRequest]);
 
@@ -155,7 +158,7 @@ const useWebRTC = (args: Args): UseWebRTC => {
                 peer.replaceTrack(localStream, 'video');
             }
         }
-        setVideoOff(prv => !prv);
+        setVideoOff((prv) => !prv);
     }, [localStream, peersInstance.peers]);
 
     const audioToggle = useCallback(() => {
@@ -173,7 +176,7 @@ const useWebRTC = (args: Args): UseWebRTC => {
                 peer.replaceTrack(localStream, 'audio');
             }
         }
-        setMuted(prv => !prv);
+        setMuted((prv) => !prv);
     }, [localStream, peersInstance.peers]);
 
     return {

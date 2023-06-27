@@ -25,13 +25,11 @@ export class Peer {
     }
 
     public init(localStream: MediaStream | null) {
-        console.log(localStream);
 
         localStream?.getTracks().forEach((track) => {
             this.addTrack(track, localStream);
         });
         this.connection.ontrack = ({ streams: [stream] }) => {
-            console.log(stream);
 
             const video = this.getVideoElement();
             if (video) {

@@ -8,7 +8,6 @@ import {
     SubscribeMessage,
     WebSocketGateway,
     WebSocketServer,
-    WsException,
 } from '@nestjs/websockets';
 import { Server } from 'socket.io';
 import { Roles } from 'src/roles/entities/role.entity';
@@ -86,6 +85,8 @@ export class MeetGateway
                     name: `${socket.data.firstName || ''} ${
                         socket.data.lastName || ''
                     }`,
+                    muted: socket.data.muted || false,
+                    videoOff: socket.data.videoOff || false,
                 }))
                 .filter((socket) => socket.id !== client.id);
             client.emit('room-users', socketIds);
@@ -99,9 +100,12 @@ export class MeetGateway
             const name = `${client.data.firstName || ''} ${
                 client.data.lastName || ''
             }`;
-            client.broadcast
-                .to(roomId)
-                .emit('user-connected', { id: client.id, name });
+            client.broadcast.to(roomId).emit('user-connected', {
+                id: client.id,
+                name,
+                muted: client.data.muted || false,
+                videoOff: client.data.videoOff || false,
+            });
         }
     }
 
@@ -172,6 +176,25 @@ export class MeetGateway
                     date: new Date(),
                 });
         }
+    }
+
+    @SubscribeMessage('make-action')
+    public action(
+        client: MeetSocket,
+        data: { type: 'audio' | 'video'; off: boolean },
+    ) {
+        if (!client.data) {
+            return;
+        }
+        if (data.type === 'audio') {
+            client.data.muted = data.off;
+        } else {
+            client.data.videoOff = data.off;
+        }
+        client.broadcast.to(client.handshake.query.roomId).emit('action-made', {
+            from: client.data,
+            data,
+        });
     }
 
     public afterInit(server: MeetServer): void {
