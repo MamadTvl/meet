@@ -27,7 +27,6 @@ interface Props {
 }
 
 const Meet: React.FC<Props> = ({ roomId, roomStarted, socket }) => {
-    console.log('Meet', 'render');
     const localVideoRef = useRef<HTMLVideoElement | null>(null);
     const meetContainerRef = useRef<HTMLDivElement | null>(null);
     const { localStream } = useUserMedia({ localVideoRef });
@@ -51,7 +50,14 @@ const Meet: React.FC<Props> = ({ roomId, roomStarted, socket }) => {
         [],
     );
 
-    const { users, peers, handleNewJoinRequest } = useWebRTC({
+    const {
+        users,
+        audioToggle,
+        videoToggle,
+        handleNewJoinRequest,
+        muted,
+        videoOff,
+    } = useWebRTC({
         roomId,
         socket,
         roomStarted,
@@ -97,7 +103,12 @@ const Meet: React.FC<Props> = ({ roomId, roomStarted, socket }) => {
                     </VideoContainer>
                 ))}
             </MeetContainer>
-            <MeetController />
+            <MeetController
+                muted={muted}
+                videoOff={videoOff}
+                audioToggle={audioToggle}
+                videoToggle={videoToggle}
+            />
             <RequestAlert
                 {...requestAlertProps}
                 onMakeDecision={onMakeRequestDecision}

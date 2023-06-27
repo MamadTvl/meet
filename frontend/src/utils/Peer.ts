@@ -3,6 +3,13 @@ export class Peer {
     public stream: MediaStream | null = null;
 
     constructor(public id: string) {
+        const hasCustomServer = import.meta.env.VITE_CUSTOM_TURN_SERVER !== '';
+        const server = hasCustomServer && {
+            urls: import.meta.env.VITE_CUSTOM_TURN_SERVER,
+            username: import.meta.env.VITE_CUSTOM_TURN_SERVER_USERNAME,
+            credential: import.meta.env.VITE_CUSTOM_TURN_SERVER_PASSWORD,
+        };
+
         this.connection = new RTCPeerConnection({
             iceServers: [
                 {
@@ -14,12 +21,7 @@ export class Peer {
                         'stun:stun4.l.google.com:19302',
                     ],
                 },
-                {
-                    urls: import.meta.env.VITE_CUSTOM_TURN_SERVER,
-                    username: import.meta.env.VITE_CUSTOM_TURN_SERVER_USERNAME,
-                    credential: import.meta.env
-                        .VITE_CUSTOM_TURN_SERVER_PASSWORD,
-                },
+                // server ? server,
             ],
         });
     }
@@ -72,6 +74,36 @@ export class Peer {
 
     public addTrack(track: MediaStreamTrack, stream: MediaStream) {
         this.connection.addTrack(track, stream);
+    }
+
+    public removeTrack(type: 'video' | 'audio') {
+        this.connection.getSenders().forEach((sender) => {
+            if (sender.track?.kind === type) {
+                this.connection.removeTrack(sender);
+            }
+        });
+    }
+
+    public async replaceTrack(
+        localStream: MediaStream,
+        type: 'video' | 'audio',
+    ) {
+        for (const s of this.connection.getSenders()) {
+            if (s.track?.kind == null || s.track?.kind === type) {
+                try {
+                    let track = localStream.getVideoTracks()[0];
+                    if (type === 'audio') {
+                        track = localStream.getAudioTracks()[0];
+                    }
+                    await s.replaceTrack(track);
+                } catch {}
+            }
+        }
+        for (const t of this.connection.getTransceivers()) {
+            if (t.sender.track?.kind == null || t.sender.track.kind === type) {
+                t.direction = 'sendrecv';
+            }
+        }
     }
 
     public getVideoElement(): HTMLVideoElement | null {

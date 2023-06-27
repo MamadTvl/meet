@@ -8,6 +8,10 @@ export interface UseWebRTC {
         [id: string]: Peer;
     };
     handleNewJoinRequest: (socketId: string, decision: boolean) => void;
+    audioToggle: () => void;
+    videoToggle: () => void;
+    muted: boolean;
+    videoOff: boolean;
 }
 
 export interface SocketUser {
@@ -27,6 +31,8 @@ const useWebRTC = (args: Args): UseWebRTC => {
     const { socket, roomStarted, localStream, onNewJoinRequest } = args;
     const [users, setUsers] = useState<SocketUser[]>([]);
     const peersInstance = useMemo(() => createPeers(), []);
+    const [muted, setMuted] = useState(false);
+    const [videoOff, setVideoOff] = useState(false);
     // const peers = useRef<{ [id: string]: Peer }>({});
 
     const start = useCallback(() => {
@@ -134,7 +140,51 @@ const useWebRTC = (args: Args): UseWebRTC => {
         [socket],
     );
 
-    return { users, peers: peersInstance.peers, handleNewJoinRequest };
+    const videoToggle = useCallback(() => {
+        if (!localStream) {
+            return;
+        }
+        const enabled = localStream.getVideoTracks()[0].enabled;
+
+        localStream.getVideoTracks()[0].enabled = !enabled;
+        for (const id in peersInstance.peers) {
+            const peer = peersInstance.peers[id];
+            if (enabled) {
+                peer.removeTrack('video');
+            } else {
+                peer.replaceTrack(localStream, 'video');
+            }
+        }
+        setVideoOff(prv => !prv);
+    }, [localStream, peersInstance.peers]);
+
+    const audioToggle = useCallback(() => {
+        if (!localStream) {
+            return;
+        }
+        const enabled = localStream.getAudioTracks()[0].enabled;
+
+        localStream.getAudioTracks()[0].enabled = !enabled;
+        for (const id in peersInstance.peers) {
+            const peer = peersInstance.peers[id];
+            if (enabled) {
+                peer.removeTrack('audio');
+            } else {
+                peer.replaceTrack(localStream, 'audio');
+            }
+        }
+        setMuted(prv => !prv);
+    }, [localStream, peersInstance.peers]);
+
+    return {
+        users,
+        peers: peersInstance.peers,
+        handleNewJoinRequest,
+        audioToggle,
+        videoToggle,
+        muted,
+        videoOff,
+    };
 };
 
 export default useWebRTC;
