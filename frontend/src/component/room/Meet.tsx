@@ -86,6 +86,7 @@ const Meet: React.FC<Props> = ({ roomId, roomStarted, socket }) => {
     });
 
     const hiddenStyle: CSSProperties = {
+        display: 'none',
         visibility: 'hidden',
         opacity: 0,
     };
@@ -124,7 +125,10 @@ const Meet: React.FC<Props> = ({ roomId, roomStarted, socket }) => {
             height={'calc(100vh - 128px)'}>
             <MeetContainer ref={meetContainerRef}>
                 <VideoContainer>
-                    <Video playsInline ref={localVideoRef} autoPlay muted />
+                    <VideoPlaceHolder
+                        style={videoOff ? visibleStyle : hiddenStyle}
+                    />
+                    <Video style={videoOff ? hiddenStyle : visibleStyle} playsInline ref={localVideoRef} autoPlay muted />
                     <StreamChip label={'You'} color={'secondary'} />
                     {muted && muteIcon}
                 </VideoContainer>

@@ -24,7 +24,6 @@ const useCalculateCalculate = (args: Args) => {
             videoCount,
             aspectRatio,
         );
-        console.log(width, height, cols);
         
 
         containerRef.current?.style?.setProperty('--width', width + 'px');

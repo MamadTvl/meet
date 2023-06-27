@@ -26,10 +26,17 @@ export class Peer {
         });
     }
 
-    public init(localStream: MediaStream | null) {
-        localStream?.getTracks().forEach((track) => {
-            this.addTrack(track, localStream);
-        });
+    public init(localStream: MediaStream | null, video: boolean, audio: boolean) {
+        if (video) {
+            localStream?.getVideoTracks().forEach((track) => {
+                this.addTrack(track, localStream);
+            });
+        }
+        if (audio) {
+            localStream?.getAudioTracks().forEach((track) => {
+                this.addTrack(track, localStream);
+            });
+        }
         this.connection.ontrack = ({ streams: [stream] }) => {
             const video = this.getVideoElement();
             if (video) {

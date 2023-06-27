@@ -16,38 +16,34 @@ const useUserMedia = (args: Args): UseUserMedia => {
     const { localVideoRef } = args;
     const [localStream, setLocalStream] = useState<MediaStream | null>(null);
 
-    const getUserMedia = useCallback(async () => {
-        const devices = await navigator.mediaDevices.enumerateDevices();
-        console.log(devices);
-        const stream = await navigator.mediaDevices.getUserMedia({
-            video: {
-                width: { min: 640, ideal: 1920 },
-                height: { min: 400, ideal: 1080 },
-                aspectRatio: { ideal: 1.7777777778 }
-            },
-            audio: true,
-        });
-        setLocalStream(stream);
-
-        const localVideo = localVideoRef.current;
-        if (localVideo) {
-            localVideo.srcObject = stream;
-        }
-    }, [localVideoRef]);
-
     useEffect(() => {
         const localVideo = localVideoRef.current;
-
-        if (localVideo) {
-            getUserMedia();
+        if (!localVideo) {
+            return;
         }
+        let stream: MediaStream | null = null;
+        navigator.mediaDevices
+            .getUserMedia({
+                video: {
+                    width: { min: 640, ideal: 1920 },
+                    height: { min: 400, ideal: 1080 },
+                    aspectRatio: { ideal: 1.7777777778 },
+                },
+                audio: true,
+            })
+            .then((media) => {
+                stream = media;
+                setLocalStream(media);
+                const localVideo = localVideoRef.current;
+                if (localVideo) {
+                    localVideo.srcObject = stream;
+                }
+            });
+
         return () => {
-            if (localVideo) {
-                localStream?.getTracks()?.forEach((track) => track.stop());
-                localVideo.srcObject = null;
-            }
+            stream?.getTracks()?.forEach((track) => track.stop());
         };
-    }, [getUserMedia]);
+    }, [localVideoRef]);
 
     return { localStream };
 };

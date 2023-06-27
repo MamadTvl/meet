@@ -27,6 +27,7 @@ export const Video = styled('video')({
 });
 
 export const VideoPlaceHolder = styled(Box)({
+    transition: 'opacity .3s',
     height: '100%',
     width: '100%',
     background: '#000'

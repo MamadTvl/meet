@@ -46,17 +46,17 @@ const useWebRTC = (args: Args): UseWebRTC => {
 
         client.once('room-users', async (users: SocketUser[]) => {
             const initialUsers: SocketUser[] = [];
-            for (const { id, name } of users) {
+            for (const { id, name, muted, videoOff } of users) {
                 const peer = new Peer(id);
-                peer.init(localStream);
-                initialUsers.push({ id, name, muted: false, videoOff: false });
+                peer.init(localStream, !videoOff, !muted);
+                initialUsers.push({ id, name, muted, videoOff });
                 peersInstance.add(id, peer);
             }
             setUsers(initialUsers);
             client.emit('ready-to-connect');
         });
         client.on('user-connected', async (data: SocketUser) => {
-            const { id: socketId } = data;
+            const { id: socketId, muted, videoOff } = data;
             if (peersInstance.peers[socketId]) {
                 return;
             }
@@ -69,7 +69,7 @@ const useWebRTC = (args: Args): UseWebRTC => {
                     });
                 }
             };
-            peer.init(localStream);
+            peer.init(localStream, !videoOff, !muted);
             const offer = await peer.createOffer();
             peersInstance.add(socketId, peer);
             setUsers((prvState) => [...prvState, data]);
