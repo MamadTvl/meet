@@ -53,6 +53,7 @@ const LoginForm = () => {
         validationSchema: codeSchema,
         onSubmit: async (values) => {
             try {
+                setStep(Step.SIGN_UP);
                 const response = await Api(apiEndpoint.sendVerifyCode, {
                     method: 'POST',
                     data: {
@@ -60,11 +61,11 @@ const LoginForm = () => {
                     },
                 });
                 enqueueSnackbar(response.data.message, { variant: 'success' });
-                setStep(Step.SIGN_UP);
             } catch (err: any) {
                 enqueueSnackbar(err.response.data.message, {
                     variant: 'error',
                 });
+                setStep(Step.SEND_VERIFICATION_CODE);
             }
         },
     });
@@ -90,6 +91,7 @@ const LoginForm = () => {
                 enqueueSnackbar(err.response.data.message, {
                     variant: 'error',
                 });
+                setStep(Step.SEND_VERIFICATION_CODE);
             }
         },
     });
