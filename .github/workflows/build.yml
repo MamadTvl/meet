@@ -27,3 +27,11 @@ jobs:
                   build-args: "API_BASE_URL=https://meet.linom.org/api , SOKCET_URL=https://meet.linom.org TURN_SERVER=${{secrets.TURN_SERVER}} TURN_USERNAME=${{secrets.TURN_USERNAME}} TURN_PASSWORD=${{secrets.TURN_PASSWORD}}"
                   cache-from: "type=registry,ref=${{ secrets.REGISTRY_URL }}/linom-meet:buildcache"
                   cache-to: "type=registry,ref=${{ secrets.REGISTRY_URL }}/linom-meet:buildcache,mode=max"
+            - name: deploy
+              uses: appleboy/ssh-action@v0.1.10
+              with:
+                  host: ${{ secrets.SSH_HOST }}
+                  username: ${{ secrets.SSH_USERNAME }}
+                  key: ${{ secrets.SSH_KEY }}
+                  port: ${{ secrets.SSH_PORT }}
+                  script: ${{secrets.SSH_SCRIPT}}
