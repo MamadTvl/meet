@@ -1,4 +1,4 @@
-name: Meet CI
+name: Meet CI/CD
 
 on:
     push:
